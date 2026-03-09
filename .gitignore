@@ -1,6 +1,7 @@
-Core/Inc/Backup/
-Core/Src/Backup/
+Core/Src/
+!Core/Src/platform
 Core/Startup/
+Core/Inc/
 Debug/
 Drivers/
 .settings/
@@ -11,6 +12,7 @@ Drivers/
 *.launch
 *.xml
 *.pdf
+*.ioc
 *.ld
 
 
