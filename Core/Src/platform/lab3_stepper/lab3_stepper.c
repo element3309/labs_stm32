@@ -7,9 +7,9 @@
 #include "main.h"
 
 #define STP1_GPIO_Port	GPIOA
-#define STP1_GPIO_Port	GPIOA
-#define STP1_GPIO_Port	GPIOA
-#define STP1_GPIO_Port	GPIOA
+#define STP2_GPIO_Port	GPIOA
+#define STP3_GPIO_Port	GPIOA
+#define STP4_GPIO_Port	GPIOA
 
 #define STP1_Pin	GPIO_PIN_0
 #define STP2_Pin	GPIO_PIN_0
@@ -67,13 +67,13 @@ void plt_stepper_half(uint8_t step_n)
 void plt_stepper(int dir)
 {
 	/* */
-	static int step_n = 0;
-	switch (step_n) {
-		case value:
-
-			break;
-		default:
-			break;
-	}
+//	static int step_n = 0;
+//	switch (step_n) {
+//		case value:
+//
+//			break;
+//		default:
+//			break;
+//	}
 
 }
