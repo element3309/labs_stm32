@@ -7,5 +7,7 @@ void plt_adc_start(void);
 void plt_adc_stop(void);
 int plt_adc_conversion_poll(void);
 uint32_t plt_adc_get_value(void);
+float plt_adc_get_voltage(void);
+float plt_adc_get_temperature(void);
 
 #endif /* SRC_PLATFORM_LAB4_ADC_LAB4_ADC_H_ */
