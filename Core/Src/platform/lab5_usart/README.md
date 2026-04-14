@@ -34,5 +34,5 @@
     [CODE: 0] LED OFF
     > 5
     [CODE: 1] Use only 1 or 0
-
-    Удачи!
+    ```
+Удачи!
