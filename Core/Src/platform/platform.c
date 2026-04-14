@@ -1,29 +1,13 @@
-/* Директива препроцессора для подключения заголовочного файла */
 #include "platform.h"
+#include "lab5_usart.h"
 
-//#include "lab1_gpio/lab1_gpio.h"
-//#include "lab2_timer/lab2_timer.h"
-//#include "lab3_stepper/lab3_stepper.h"
-#include "lab4_adc/lab4_adc.h"
-
-/* Однократный вызов */
 int plt_init(void)
 {
-
-	return 0;
+    plt_uart_init();
+    return 0;
 }
 
-
-/* Повторяющийся вызов */
 void plt_process(void)
 {
-
-	/* Устанавливаем задержку */
-	plt_delay(500);
+    // nothing is here
 }
-
-/* Перенести в main.c в user code */
-//void plt_delay(uint32_t delay_ms)
-//{
-//	HAL_Delay(delay_ms);
-//}
