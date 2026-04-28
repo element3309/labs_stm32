@@ -18,11 +18,14 @@ int stp = 0;
 /* Повторяющийся вызов */
 void plt_process(void)
 {
-	if (stp > 4) stp = 1;
+	//if (stp > 4) stp = 1;
 	//plt_stepper_dir;
-	plt_stepper_full(stp);
-	stp++;
+	//plt_stepper_full(stp);
+	//stp++;
 	/* Устанавливаем задержку */
-	plt_delay(10);
+	//plt_delay(10);
+	plt_stepper(-1);
+	plt_delay(15);
 }
+
 

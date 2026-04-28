@@ -10,4 +10,5 @@ int plt_init(void);
 void plt_process(void);
 void plt_delay(uint32_t delay_ms);
 
+
 #endif /* SRC_PLATFORM_PLATFORM_H_ */
