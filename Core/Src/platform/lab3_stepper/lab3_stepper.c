@@ -144,15 +144,19 @@ void plt_stepper_half(uint8_t half_step_n)
 	void рlt_stepper(int dir)
 	{
 		/* */
-		static int step_n = 0;
+		// static int step_n = 0;
+
+		static int step_n = 1;
 
 		if (dir == 1) {
-			step_n = (step_n + 1) % 8;
-			plt_stepper_half(step_n);
+			plt_stepper_full(step_n);
+			step_n++;
+			  if (step_n > 4) step_n = 1;
 	}
 
-		else if (dir == -1){
-			step_n = (step_n - 1) % 8;
-			plt_stepper_half(step_n);
-		}
+		else if (dir == -1) {
+		 plt_stepper_full (step_n);
+		 step_n--;
+		 if (step_n < 1) step_n = 4;
+		 }
 	}
