@@ -22,7 +22,6 @@
  * @param step_n - номер шага
  * @return void
  */
-/**
 void plt_stepper_full(uint8_t step_n)
 {
 	switch (step_n) {
@@ -66,9 +65,13 @@ void plt_stepper_full(uint8_t step_n)
 	}
 
 }
-	/*
-	 *
-	 */
+
+/**
+ * @brief выполняет переключение обмоток в рамках полу-шага ШД
+ *
+ * @param step_n - номер полу-шага
+ * @return void
+ */
 void plt_stepper_half(uint8_t step_n)
 {
 	switch (step_n) {
