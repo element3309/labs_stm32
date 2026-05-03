@@ -13,7 +13,9 @@
 /* объявление внешней переменной — сообщает компилятору, что переменная htimN типа TIM_HandleTypeDef
  * определена где-то в другом месте (в другом файле компиляции) и будет доступна на этапе линковки. */
 extern ADC_HandleTypeDef hadc3;
-
+#include <stdio.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <stdio.h>
 
 #define Vref    3.3f       // Образцовое напряжение АЦП (в вольтах).
@@ -44,8 +46,32 @@ uint32_t plt_adc_get_value(void)
  * Функция использует в теле plt_adc_get_value() или
  * принимает аргументом целое число - результат измерений с АЦП
  * Функция возвращает напряжение в вольтах*/
+
+const int countN = 0;
+
+
 float plt_adc_get_voltage(void)
 {
     float voltage = 0.00;
     return voltage;
+}
+
+int task4(){
+	int count = 0;
+	while(1){
+		plt_adc_start();
+		plt_adc_conversion_poll();
+		uint32_t adc_value = plt_adc_get_value();
+		plt_adc_stop();
+		count++;
+
+		printf("uint32_t: %" PRIu32 "\n", adc_value);
+		//как узнать GPIO?
+		//ну и тут уже увеличиваем и включаем светодиод хз как его вызыват
+//		if(count >= 3000){
+//			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+//			//включаем светодиод
+//		}
+	}
+	return 0;
 }
