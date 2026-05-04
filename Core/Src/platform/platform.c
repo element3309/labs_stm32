@@ -1,5 +1,5 @@
 #include "platform.h"
-#include "lab5_usart.h"
+#include "lab5_usart/lab5_usart.h"
 
 int plt_init(void)
 {
