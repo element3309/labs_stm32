@@ -44,6 +44,7 @@ uint32_t plt_adc_get_value(void)
  * Функция использует в теле plt_adc_get_value() или
  * принимает аргументом целое число - результат измерений с АЦП
  * Функция возвращает напряжение в вольтах*/
+
 float plt_adc_get_voltage(void)
 {
     float voltage = 0.00;

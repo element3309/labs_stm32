@@ -9,7 +9,8 @@ extern UART_HandleTypeDef huart1;
 /* Однократный вызов */
 int plt_init(void)
 {
-
+	  plt_timer_set(1999);
+	  plt_timer_start_irq();
 	return 0;
 }
 
@@ -26,3 +27,8 @@ void plt_process(void)
 //{
 //	HAL_Delay(delay_ms);
 //}
+
+void plt_timer_irq_cb(void)
+{
+	HAL_GPIO_TogglePin(USER_LED_GPIO_Port, USER_LED_Pin);
+}
