@@ -2,9 +2,9 @@
 #include "platform.h"
 #include "main.h"
 #include "lab1_gpio/lab1_gpio.h"
-#include "lab2_timer/lab2_timer.h"
-#include "lab3_stepper/lab3_stepper.h"
-#include "lab4_adc/lab4_adc.h"
+//#include "lab2_timer/lab2_timer.h"
+//#include "lab3_stepper/lab3_stepper.h"
+//#include "lab4_adc/lab4_adc.h"
 extern UART_HandleTypeDef huart1;
 /* Однократный вызов */
 int plt_init(void)
@@ -17,22 +17,36 @@ int plt_init(void)
 /* Повторяющийся вызов */
 void plt_process(void)
 {
-  static int direction = 1;
-  static uint32_t last_step_time = 0;
-  static int step_count = 0;
+	 static uint8_t brightness = 0;
+	 static int8_t direction = 1;
 
-    uint32_t current_time = HAL_GetTick();
+	    for (uint8_t i = 0; i < 100; i++)
+	    {
+	        if (i < brightness)
+	        {
+	            HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_SET);
+	        }
+	        else
+	        {
+	            HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_RESET);
+	        }
 
-    if (current_time - last_step_time >= 5) {
-        plt_stepper(direction);
-        last_step_time = current_time;
-        step_count++;
+	        for (volatile uint32_t d = 0; d < 300; d++)
+	        {
+	        }
+	    }
 
-        if (step_count >= 200) {
-            direction = -direction;
-            step_count = 0;
-        }
-    }
+	    brightness += direction;
+
+	    if (brightness >= 100)
+	    {
+	        direction = -1;
+	    }
+	    else if (brightness == 0)
+	    {
+	        direction = 1;
+	    }
+	}
 //  static int half_step_n = 0;
 //  if(half_step_n>8){
 //    half_step_n = 1;
@@ -40,4 +54,4 @@ void plt_process(void)
 //  plt_stepper_half(half_step_n);
 //  plt_delay(5);
 //  half_step_n++;
-}
+
