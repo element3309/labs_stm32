@@ -1,114 +1,83 @@
-/* Директива препроцессора для подключения заголовочного файла */
-
 #include "lab5_usart.h"
-#include "platform.h"
-#include "stm32f1xx_hal.h"
+#include "main.h"
+#include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
 
-static volatile uint8_t uart_rx_flag = 0;
-static uint8_t rx_byte = 0;
 
-// Счётчик обработанных команд – приватная глобальная static‑переменная
-static uint32_t command_counter = 0;
-
-// Внешний хендл UART (обычно объявлен в main.c)
 extern UART_HandleTypeDef huart1;
 
-/* ----------------------------------------------------------------
-   Вспомогательная функция send_response
-   (демонстрирует локальную static‑переменную)
-   ---------------------------------------------------------------- */
-static void send_response(uint8_t code, const char *msg)
+static char tx_buf[256];
+static char rx_byte = 0;
+
+volatile int uart_rx_flag = 0;
+/* init UART и стартового меню */
+void plt_uart_init(void)
 {
+    plt_uart_send("\r\n=== LED CONTROL ===\r\n");
+    plt_uart_send("Enter 1 -> LED ON\r\n");
+    plt_uart_send("Enter 0 -> LED OFF\r\n");
+    plt_uart_send("==================\r\n");
+    plt_uart_send("Waiting input: ");
 
-    static uint32_t response_count = 0;
-    response_count++;
-
-    // Отправляем префикс с кодом
-    plt_uart_send("\n[CODE: ");
-    if (code == 0)
-        plt_uart_send("0");
-    else
-        plt_uart_send("1");
-
-    // Отправляем сообщение и информацию о счётчике ответов (для демонстрации static)
-    plt_uart_send("] ");
-    plt_uart_send(msg);
-    plt_uart_send(" (response #");
-    char buf[12];
-    sprintf(buf, "%lu", response_count);
-    plt_uart_send(buf);
-    plt_uart_send(")\nWaiting input: ");
+    HAL_UART_Receive_IT(&huart1, (uint8_t*)&rx_byte, 1); /* перезапуск приема след байта*/
 }
 
-/* ================================================================
-   Инициализация USART (не содержит static, но может быть вызвана
-   лишь один раз при старте программы)
-   ================================================================ */
-void USART_Init(uint32_t baudrate)
+/* send строки по UART */
+void plt_uart_send(const char *data)
 {
-    // В реальном коде здесь настройка HAL, сейчас заглушка
-    // HAL_UART_Init(&huart1); ...
+    HAL_UART_Transmit(&huart1, (uint8_t*)data, strlen(data), HAL_MAX_DELAY);
 }
 
-/* ================================================================
-   Основной цикл опроса (вызывается из main или plt_process)
-   Здесь с помощью static реализован КОНЕЧНЫЙ АВТОМАТ
-   ================================================================ */
-void USART_Process(void)
+/* отформатированный вывод */
+void plt_uart_print(const char *format, ...)
 {
-    // Локальная static‑переменная для конечного автомата обработки команд
-    static enum {
-        STATE_IDLE,
-        STATE_WAIT_COMMAND
-    } fsm_state = STATE_IDLE;
-
-    // Проверяем, доступен ли принятый байт
-    if (plt_uart_is_available()) {
-        uart_rx_flag = 0;               // сбрасываем флаг
-        plt_uart_send(&rx_byte);        // эхо только что принятого символа
-
-        switch (fsm_state) {
-            case STATE_IDLE:
-                // Игнорируем всё, пока не начнём активный приём
-                if (rx_byte != '\r' && rx_byte != '\n') {
-                    fsm_state = STATE_WAIT_COMMAND;
-                }
-                break;
-
-            case STATE_WAIT_COMMAND:
-                if (rx_byte == '1') {
-                    HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_SET);
-                    send_response(0, "LED ON");
-                    fsm_state = STATE_IDLE;
-                    command_counter++;
-                } else if (rx_byte == '0') {
-                    HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_RESET);
-                    send_response(0, "LED OFF");
-                    fsm_state = STATE_IDLE;
-                    command_counter++;
-                } else {
-                    if (rx_byte != '\r' && rx_byte != '\n') {
-                        send_response(1, "Use only 1 or 0");
-                        fsm_state = STATE_IDLE;
-                    }
-                }
-                break;
-        }
-
-        // Перезапускаем прерывание для приёма следующего байта
-        HAL_UART_Receive_IT(&huart1, (uint8_t*)&rx_byte, 1);
-    }
+    va_list args;
+    va_start(args, format);
+    vsnprintf(tx_buf, sizeof(tx_buf), format, args);
+    va_end(args);
+    plt_uart_send(tx_buf);
 }
 
+int plt_uart_is_available(void)
+{
+	return uart_rx_flag;
+}
+
+void plt_uart_proccess(void)
+{
+	if(plt_uart_is_available())
+	{
+		uart_rx_flag = 0;
+
+	    plt_uart_send(&rx_byte); /* отправка нажатого символа обратно */
+
+	    if (rx_byte == '1') /* если 1, то вкл */
+	    {
+	        HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_SET);
+	        plt_uart_send("\r\n[OK] LED ON\r\nWaiting input: ");
+	    }
+	    else if (rx_byte == '0') /* если 0, то выкл */
+	    {
+	        HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_RESET);
+	        plt_uart_send("\r\n[OK] LED OFF\r\nWaiting input: ");
+	    }
+	    else
+	    {
+	        if (rx_byte != '\r' && rx_byte != '\n')
+	        {
+	            plt_uart_send("\r\n[ERROR] Use 1 or 0 only\r\nWaiting input: ");
+	        }
+	    }
+
+	    HAL_UART_Receive_IT(&huart1, (uint8_t*)&rx_byte, 1);
+	}
+}
+
+/* колбэк при получении байта */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if (huart->Instance == USART1) {
-        uart_rx_flag = 1;
-    }
-}
+    if (huart->Instance != USART1) return;
 
-
-uint32_t USART_GetCommandCount(void)
-{
-    return command_counter;
+    uart_rx_flag = 1;
 }
