@@ -1,7 +1,7 @@
 /* Директива препроцессора для подключения заголовочного файла */
 #include "platform.h"
 #include "main.h"
-//#include "lab1_gpio/lab1_gpio.h"
+#include "lab1_gpio/lab1_gpio.h"
 #include "lab2_timer/lab2_timer.h"
 //#include "lab3_stepper/lab3_stepper.h"
 //#include "lab4_adc/lab4_adc.h"
@@ -22,7 +22,7 @@ void plt_process(void)
 }
 void plt_timer_irq_cb(void)
 {
-    HAL_GPIO_TogglePin(USER_LED_GPIO_Port, USER_LED_Pin);
+	plt_gpio_toggle();
 }
 
 
