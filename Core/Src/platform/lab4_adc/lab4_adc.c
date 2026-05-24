@@ -18,7 +18,7 @@ extern ADC_HandleTypeDef hadc3;
 #include <inttypes.h>
 #include <stdio.h>
 
-#define Vref    3.3f       // Образцовое напряжение АЦП (в вольтах).
+#define Vref 	3.3f       // Образцовое напряжение АЦП (в вольтах).
 
 
 void plt_adc_start(void)
@@ -52,26 +52,15 @@ const int countN = 0;
 
 float plt_adc_get_voltage(void)
 {
-    float voltage = 0.00;
-    return voltage;
-}
+    uint32_t adc_raw_value;
+    float voltage;
 
-int task4(){
-	int count = 0;
-	while(1){
-		plt_adc_start();
-		plt_adc_conversion_poll();
-		uint32_t adc_value = plt_adc_get_value();
-		plt_adc_stop();
-		count++;
+    plt_adc_start();
+    plt_adc_conversion_poll();
+    adc_raw_value = plt_adc_get_value();
+    plt_adc_stop();
 
-		printf("uint32_t: %" PRIu32 "\n", adc_value);
-		//как узнать GPIO?
-		//ну и тут уже увеличиваем и включаем светодиод хз как его вызыват
-//		if(count >= 3000){
-//			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-//			//включаем светодиод
-//		}
-	}
-	return 0;
+    voltage = (adc_raw_value / 4095) * 3.3;
+
+    return voltage; 
 }
