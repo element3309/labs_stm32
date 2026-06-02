@@ -36,7 +36,7 @@ int plt_timer_start_irq(void)
  * а слабое будет проигнорировано. Если сильного определения нет, то используется слабое. */
 __weak void plt_timer_irq_cb(void)
 {
-  while (1){}
+    plt_gpio_toggle();
 }
 
 /**
