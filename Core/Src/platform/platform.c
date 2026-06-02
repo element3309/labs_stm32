@@ -17,8 +17,33 @@ int plt_init(void)
 /* Повторяющийся вызов */
 void plt_process(void)
 {
-	/* Устанавливаем задержку */
-	plt_delay(500);
+	float voltage;
+
+    plt_adc_start();
+
+    if (plt_adc_conversion_poll() == PLT_OK)
+    {
+        voltage = plt_adc_get_voltage();
+
+        if (voltage > 3.0f)
+        {
+            HAL_GPIO_WritePin(
+                USER_LED_GPIO_Port,
+                USER_LED_Pin,
+                GPIO_PIN_SET);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(
+                USER_LED_GPIO_Port,
+                USER_LED_Pin,
+                GPIO_PIN_RESET);
+        }
+    }
+
+    plt_adc_stop();
+
+    plt_delay(100);
 }
 
 /* Перенести в main.c в user code */

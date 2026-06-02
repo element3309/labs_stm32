@@ -17,6 +17,7 @@ extern ADC_HandleTypeDef hadc3;
 #include <stdio.h>
 
 #define Vref    3.3f       // Образцовое напряжение АЦП (в вольтах).
+#define ADC_MAX_VALUE 4095.0f
 
 
 void plt_adc_start(void)
@@ -46,6 +47,5 @@ uint32_t plt_adc_get_value(void)
  * Функция возвращает напряжение в вольтах*/
 float plt_adc_get_voltage(void)
 {
-    float voltage = 0.00;
-    return voltage;
+    return ((float)plt_adc_get_value() * Vref) / ADC_MAX_VALUE;
 }
