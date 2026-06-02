@@ -1,20 +1,15 @@
-/* Директива препроцессора для подключения заголовочного файла */
 #include "lab3_stepper.h"
-
-/* Подключение заголовочного файла main.h
- * main.h в свою очередь подключает _hal.h" - файл
- * необходимый для работы с периферией МК stm32 */
 #include "main.h"
 
-#define STP1_GPIO_Port	GPIOA
-#define STP2_GPIO_Port	GPIOA
-#define STP3_GPIO_Port	GPIOA
-#define STP4_GPIO_Port	GPIOA
+#define STP1_GPIO_Port	SM1_GPIO_PORT
+#define STP2_GPIO_Port	SM2_GPIO_PORT
+#define STP3_GPIO_Port	SM3_GPIO_PORT
+#define STP4_GPIO_Port	SM4_GPIO_PORT
 
-#define STP1_Pin	GPIO_PIN_0
-#define STP2_Pin	GPIO_PIN_0
-#define STP3_Pin	GPIO_PIN_0
-#define STP4_Pin	GPIO_PIN_0
+#define STP1_Pin	SM1_PIN
+#define STP2_Pin	SM2_PIN
+#define STP3_Pin	SM3_PIN
+#define STP4_Pin	SM4_PIN
 
 /**
  * @brief выполняет переключение обмоток в рамках одного шага ШД
@@ -74,8 +69,67 @@ void plt_stepper_full(uint8_t step_n)
  */
 void plt_stepper_half(uint8_t half_step_n)
 {
+    switch (half_step_n % 8)
+    {
+        case 0:
+            HAL_GPIO_WritePin(STP1_GPIO_Port, STP1_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(STP2_GPIO_Port, STP2_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP3_GPIO_Port, STP3_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP4_GPIO_Port, STP4_Pin, GPIO_PIN_RESET);
+            break;
 
+        case 1:
+            HAL_GPIO_WritePin(STP1_GPIO_Port, STP1_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(STP2_GPIO_Port, STP2_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP3_GPIO_Port, STP3_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP4_GPIO_Port, STP4_Pin, GPIO_PIN_RESET);
+            break;
+
+        case 2:
+            HAL_GPIO_WritePin(STP1_GPIO_Port, STP1_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(STP2_GPIO_Port, STP2_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(STP3_GPIO_Port, STP3_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP4_GPIO_Port, STP4_Pin, GPIO_PIN_RESET);
+            break;
+
+        case 3:
+            HAL_GPIO_WritePin(STP1_GPIO_Port, STP1_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP2_GPIO_Port, STP2_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(STP3_GPIO_Port, STP3_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP4_GPIO_Port, STP4_Pin, GPIO_PIN_RESET);
+            break;
+
+        case 4:
+            HAL_GPIO_WritePin(STP1_GPIO_Port, STP1_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP2_GPIO_Port, STP2_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(STP3_GPIO_Port, STP3_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(STP4_GPIO_Port, STP4_Pin, GPIO_PIN_RESET);
+            break;
+
+        case 5:
+            HAL_GPIO_WritePin(STP1_GPIO_Port, STP1_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP2_GPIO_Port, STP2_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP3_GPIO_Port, STP3_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(STP4_GPIO_Port, STP4_Pin, GPIO_PIN_RESET);
+            break;
+
+        case 6:
+            HAL_GPIO_WritePin(STP1_GPIO_Port, STP1_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP2_GPIO_Port, STP2_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP3_GPIO_Port, STP3_Pin, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(STP4_GPIO_Port, STP4_Pin, GPIO_PIN_SET);
+            break;
+
+        case 7:
+            HAL_GPIO_WritePin(STP1_GPIO_Port, STP1_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP2_GPIO_Port, STP2_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP3_GPIO_Port, STP3_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(STP4_GPIO_Port, STP4_Pin, GPIO_PIN_RESET);
+            break;
+    }
 }
+
+
 
 /**
  * @brief вращает шаговый двигатель в заданном направлении
@@ -86,14 +140,24 @@ void plt_stepper_half(uint8_t half_step_n)
  */
 void plt_stepper(int dir)
 {
-	/* */
-//	static int step_n = 0;
-//	switch (step_n) {
-//		case value:
-//
-//			break;
-//		default:
-//			break;
-//	}
+    static int8_t step_n = 0;
+    if (step_n >= 8){
+        step_n  = 0;
+    }else if (step_n < 0){
+        step_n = 7;
+    }
+    if (dir > 0)
+    {
+        plt_stepper_half((uint8_t)step_n);
+    }
+    else if (dir < 0)
+    {
+        plt_stepper_half((uint8_t)step_n);
+    }else{
+        HAL_GPIO_WritePin(STP1_GPIO_Port, STP1_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(STP2_GPIO_Port, STP2_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(STP3_GPIO_Port, STP3_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(STP4_GPIO_Port, STP4_Pin, GPIO_PIN_RESET);
+    }
 
 }
